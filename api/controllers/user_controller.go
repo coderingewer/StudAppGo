@@ -69,6 +69,38 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, userGotten)
 }
 
+func GetUsersByUni(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unid, err := strconv.ParseUint(vars["universtyId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	user := models.User{}
+	userGotten, err := user.FindByUniversityID(uint(unid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, userGotten)
+}
+
+func GetUsersByFaculty(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unid, err := strconv.ParseUint(vars["facultyId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	user := models.User{}
+	userGotten, err := user.FindByUniversityID(uint(unid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, userGotten)
+}
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)

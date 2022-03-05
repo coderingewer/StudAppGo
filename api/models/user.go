@@ -158,6 +158,31 @@ func (u *User) FindByUniversityID(unid uint) ([]User, error) {
 	return users, nil
 }
 
+func (u *User) FindByFacultyID(unid uint) ([]User, error) {
+	users := []User{}
+	err := GetDB().Table("users").Where("faculty_id=?").Limit(100).Find(&users).Error
+	if err != nil {
+		return []User{}, err
+	}
+	if len(users) > 0 {
+		for i, _ := range users {
+			err := GetDB().Debug().Table("universities").Where("id=?", users[i].UniversityID).Take(&users[i].University).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("faculties").Where("id=?", users[i].FacultyID).Take(&users[i].Faculty).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+		}
+	}
+	return users, nil
+}
+
 func (u *User) FindByID(uid uint) (*User, error) {
 	var err error
 	db = GetDB()

@@ -19,6 +19,8 @@ func main() {
 	router.HandleFunc("/api/users/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUser)).Methods("DELETE")
 	router.HandleFunc("/api/users/update/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(controllers.UpdateUser))).Methods("POST")
 	router.HandleFunc("/login", middlewares.SetMiddlewareJSON(controllers.Login)).Methods("POST")
+	router.HandleFunc("/api/users/getByUni/universtyId", middlewares.SetMiddlewareJSON(controllers.GetUsersByUni)).Methods("GET")
+	router.HandleFunc("/api/users/getByFaculty/FacultyId", middlewares.SetMiddlewareJSON(controllers.GetUsersByFaculty)).Methods("GET")
 
 	//Post routers
 	router.HandleFunc("/api/posts/new", middlewares.SetMiddlewareJSON(controllers.CreatePost)).Methods("POST")
