@@ -87,13 +87,29 @@ func GetUsersByUni(w http.ResponseWriter, r *http.Request) {
 
 func GetUsersByFaculty(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	unid, err := strconv.ParseUint(vars["facultyId"], 10, 64)
+	fid, err := strconv.ParseUint(vars["facultyId"], 10, 64)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 	user := models.User{}
-	userGotten, err := user.FindByUniversityID(uint(unid))
+	userGotten, err := user.FindByUniversityID(uint(fid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, userGotten)
+}
+
+func GetUsersByDepartmentID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	did, err := strconv.ParseUint(vars["departmentId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	user := models.User{}
+	userGotten, err := user.FindByUniversityID(uint(did))
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
 		return

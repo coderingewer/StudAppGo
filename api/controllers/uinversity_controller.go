@@ -85,17 +85,3 @@ func AddAFaculty(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.JSON(w, http.StatusOK, unif)
 }
-
-func GetFacultyByUniID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	unid, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil {
-		utils.ERROR(w, http.StatusUnprocessableEntity, err)
-	}
-	faculty := models.UniverstyFaculty{}
-	faculties, err := faculty.GetFacultyByUniID(uint(unid))
-	if err != nil {
-		utils.ERROR(w, http.StatusUnprocessableEntity, err)
-	}
-	utils.JSON(w, http.StatusOK, faculties)
-}

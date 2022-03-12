@@ -15,7 +15,7 @@ type Department struct {
 	Schools   []University `gorm:"many2many:department_universities;" json:"-"`
 }
 
-type DepartmentUniversity struct {
+type UniversityDepartment struct {
 	UniversityID uint       `gorm:"primary_key column:university_id" json:"universityId"`
 	FacultyID    uint       `gorm:"primary_key column:faculty_id" json:"facultyId"`
 	DepartmentID uint       `gorm:"primary_key column:department_id" json:"departmentId"`
@@ -39,7 +39,7 @@ func (d *Department) Save() (*Department, error) {
 	return d, nil
 }
 
-func (d *Department) FindAllDepartment() ([]Department, error) {
+func (d *Department) FindAllDepartments() ([]Department, error) {
 	departments := []Department{}
 	db := GetDB().Table("departments").Limit(100).Find(&departments)
 	if db.Error != nil {
@@ -67,56 +67,56 @@ func (d *Department) DeleteByID(did uint) (int64, error) {
 	return db.RowsAffected, nil
 }
 
-func (duni *DepartmentUniversity) DeleteByID(dunid uint) (int64, error) {
-	db := GetDB().Debug().Table("faculties").Where("id=? ", dunid).Take(&duni).Delete(&DepartmentUniversity{})
+func (duni *UniversityDepartment) DeleteByID(dunid uint) (int64, error) {
+	db := GetDB().Debug().Table("faculties").Where("id=? ", dunid).Take(&duni).Delete(&UniversityDepartment{})
 	if db.Error != nil {
 		return 0, nil
 	}
 	return db.RowsAffected, nil
 }
 
-func (duni *DepartmentUniversity) FindDepartmentByUniID() ([]DepartmentUniversity, error) {
-	departmentuni := []DepartmentUniversity{}
+func (duni *UniversityDepartment) FindDepartmentByUniID() ([]UniversityDepartment, error) {
+	departmentuni := []UniversityDepartment{}
 	db := GetDB().Table("department_universities").Where("university_id", duni.UniversityID).Limit(100).Find(&departmentuni)
 	if db.Error != nil {
-		return []DepartmentUniversity{}, db.Error
+		return []UniversityDepartment{}, db.Error
 	}
 	for i, _ := range departmentuni {
 		err := GetDB().Debug().Table("faculties").Where("id=?", departmentuni[i].FacultyID).Take(departmentuni[i].Faculty).Error
 		if err != nil {
-			return []DepartmentUniversity{}, err
+			return []UniversityDepartment{}, err
 		}
 		err = GetDB().Debug().Table("universities").Where("id=?", departmentuni[i].UniversityID).Take(departmentuni[i].University).Error
 		if err != nil {
-			return []DepartmentUniversity{}, err
+			return []UniversityDepartment{}, err
 		}
 		err = GetDB().Debug().Table("departments").Where("id=?", departmentuni[i].DepartmentID).Take(departmentuni[i].Department).Error
 		if err != nil {
-			return []DepartmentUniversity{}, err
+			return []UniversityDepartment{}, err
 		}
 	}
 	return departmentuni, nil
 }
 
-func (duni *DepartmentUniversity) FindDepartmentByFacultyID() ([]DepartmentUniversity, error) {
-	departmentuni := []DepartmentUniversity{}
+func (duni *UniversityDepartment) FindDepartmentByFacultyID() ([]UniversityDepartment, error) {
+	departmentuni := []UniversityDepartment{}
 	db := GetDB().Table("department_universities").Where("faculty_id", duni.FacultyID).Limit(100).Find(&departmentuni)
 	if db.Error != nil {
-		return []DepartmentUniversity{}, db.Error
+		return []UniversityDepartment{}, db.Error
 	}
 	if len(departmentuni) > 0 {
 		for i, _ := range departmentuni {
 			err := GetDB().Debug().Table("faculties").Where("id=?", departmentuni[i].FacultyID).Take(departmentuni[i].Faculty).Error
 			if err != nil {
-				return []DepartmentUniversity{}, err
+				return []UniversityDepartment{}, err
 			}
 			err = GetDB().Debug().Table("universities").Where("id=?", departmentuni[i].UniversityID).Take(departmentuni[i].University).Error
 			if err != nil {
-				return []DepartmentUniversity{}, err
+				return []UniversityDepartment{}, err
 			}
 			err = GetDB().Debug().Table("departments").Where("id=?", departmentuni[i].DepartmentID).Take(departmentuni[i].Department).Error
 			if err != nil {
-				return []DepartmentUniversity{}, err
+				return []UniversityDepartment{}, err
 			}
 		}
 	}

@@ -61,6 +61,10 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	}
 	post := models.Post{}
 	postReceived, err := post.FindByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	utils.JSON(w, http.StatusOK, postReceived)
 }
 
