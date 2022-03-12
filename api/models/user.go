@@ -24,6 +24,8 @@ type User struct {
 	University   University `json:"university"`
 	FacultyID    uint       `json:"facultyId"`
 	Faculty      Faculty    `json:"faculty"`
+	DepartmentID uint       `gorm:"not null" json:"departmentId"`
+	Department   Department `json:"department"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -128,6 +130,10 @@ func (u *User) FindAllUsers() ([]User, error) {
 			if err != nil {
 				return []User{}, err
 			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
 		}
 	}
 	return users, nil
@@ -150,6 +156,10 @@ func (u *User) FindByUniversityID(unid uint) ([]User, error) {
 				return []User{}, err
 			}
 			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
 			if err != nil {
 				return []User{}, err
 			}
@@ -178,6 +188,39 @@ func (u *User) FindByFacultyID(unid uint) ([]User, error) {
 			if err != nil {
 				return []User{}, err
 			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
+		}
+	}
+	return users, nil
+}
+
+func (u *User) FindByDepartmentID(unid uint) ([]User, error) {
+	users := []User{}
+	err := GetDB().Table("users").Where("department_id=?").Limit(100).Find(&users).Error
+	if err != nil {
+		return []User{}, err
+	}
+	if len(users) > 0 {
+		for i, _ := range users {
+			err := GetDB().Debug().Table("universities").Where("id=?", users[i].UniversityID).Take(&users[i].University).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("faculties").Where("id=?", users[i].FacultyID).Take(&users[i].Faculty).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
 		}
 	}
 	return users, nil
@@ -197,15 +240,11 @@ func (u *User) FindByID(uid uint) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
-	err = GetDB().Table("faculties").Where("id =? ", u.FacultyID).Take(&u.Faculty).Error
-	if err != nil {
-		return &User{}, err
-	}
-	err = GetDB().Debug().Table("universities").Where("id=?", u.University).Take(&u.University).Error
-	if err != nil {
-		return &User{}, err
-	}
 	err = GetDB().Debug().Table("faculties").Where("id=?", u.FacultyID).Take(&u.Faculty).Error
+	if err != nil {
+		return &User{}, err
+	}
+	err = GetDB().Debug().Table("departments").Where("id=?", u.DepartmentID).Take(&u.Department).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -219,7 +258,6 @@ func (u *User) UpdateAUser(uid uint) (*User, error) {
 	}
 	db := GetDB().Table("users").Where("id=?", uid).UpdateColumn(
 		map[string]interface{}{
-			"password":   u.Password,
 			"username":   u.Username,
 			"email":      u.Email,
 			"updated_at": time.Now(),

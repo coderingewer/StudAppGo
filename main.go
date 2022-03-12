@@ -46,6 +46,8 @@ func main() {
 	router.HandleFunc("/api/universities/getByCityId/{cityId}", middlewares.SetMiddlewareJSON(controllers.GetByCityID)).Methods("GET")
 	router.HandleFunc("/api/universities/getFacultyByUniId/{id}", middlewares.SetMiddlewareJSON(controllers.GetFacultyByUniID)).Methods("GET")
 	router.HandleFunc("/api/universities/addFaculty/{id}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.AddAFaculty)).Methods("POST")
+	router.HandleFunc("/api/universities/{id}", middlewares.SetMiddlewareJSON(controllers.GetByID)).Methods("GET")
+
 	//Faculty routers
 	router.HandleFunc("/api/faculties/new", middlewares.SetMiddlewareJSON(controllers.CreateFaculty)).Methods("POST")
 	router.HandleFunc("/api/faculties/getAll", middlewares.SetMiddlewareJSON(controllers.GetFaculties)).Methods("GET")

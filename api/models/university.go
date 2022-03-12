@@ -18,9 +18,10 @@ type University struct {
 }
 
 type UniverstyFaculty struct {
-	UniversityID uint    `gorm:"primary_key column:university_id"json:"universityId"`
-	FacultyID    uint    `json:"facultyId"`
-	Ffaculty     Faculty `json:"faculty"`
+	UniversityID uint       `gorm:"primary_key column:university_id" json:"universityId"`
+	FacultyID    uint       `json:"facultyId"`
+	Faculty      Faculty    `json:"faculty"`
+	University   University `json:"university"`
 }
 
 func (uni *University) Prepare() {
@@ -66,7 +67,7 @@ func (uni *University) FindBYID(unid uint) (*University, error) {
 		return &University{}, err
 	}
 	if gorm.IsRecordNotFoundError(err) {
-		return &University{}, errors.New("Universite bulunamadı")
+		return &University{}, errors.New("University not found")
 	}
 	err = db.Debug().Table("cities").Where("id = ?", uni.CityID).Take(&uni.Location).Error
 	if err != nil {
@@ -76,9 +77,6 @@ func (uni *University) FindBYID(unid uint) (*University, error) {
 }
 
 func (unif UniverstyFaculty) AddAFacultyByID(unid, fid uint) (*UniverstyFaculty, error) {
-	facultyUni := FacultyUniversity{}
-	facultyUni.UniversityID = unid
-	facultyUni.FacultyID = fid
 	unif.UniversityID = unid
 	unif.FacultyID = fid
 
@@ -86,18 +84,12 @@ func (unif UniverstyFaculty) AddAFacultyByID(unid, fid uint) (*UniverstyFaculty,
 	if err != nil {
 		return &UniverstyFaculty{}, err
 	}
-	err = GetDB().Debug().Create(&facultyUni).Error
-	if err != nil {
-		return &UniverstyFaculty{}, err
-	}
 	if unif.UniversityID != 0 {
-		db := GetDB().Debug().Table("faculties").Where("id=?", unif.FacultyID).Take(unif.Ffaculty)
+		db := GetDB().Debug().Table("faculties").Where("id=?", unif.FacultyID).Take(unif.Faculty)
 		if db.Error != nil {
 			return &UniverstyFaculty{}, db.Error
 		}
-	}
-	if facultyUni.FacultyID != 0 {
-		db := GetDB().Debug().Table("universities").Where("id=?", facultyUni.FacultyID).Take(facultyUni.Uuniversity)
+		db = GetDB().Debug().Table("universities").Where("id=?", unif.UniversityID).Take(unif.University)
 		if db.Error != nil {
 			return &UniverstyFaculty{}, db.Error
 		}
@@ -105,19 +97,65 @@ func (unif UniverstyFaculty) AddAFacultyByID(unid, fid uint) (*UniverstyFaculty,
 	return &unif, nil
 }
 
-func (unif UniverstyFaculty) GetFacultyByUniID(unid uint) ([]UniverstyFaculty, error) {
+func (duni DepartmentUniversity) AddADepartmentByID(unid, did, fid uint) (*DepartmentUniversity, error) {
+	duni.UniversityID = unid
+	duni.FacultyID = fid
+	duni.DepartmentID = did
+
+	err := GetDB().Debug().Create(&duni).Error
+	if err != nil {
+		return &DepartmentUniversity{}, err
+	}
+	if duni.UniversityID != 0 {
+		db := GetDB().Debug().Table("faculties").Where("id=?", duni.FacultyID).Take(duni.Faculty)
+		if db.Error != nil {
+			return &DepartmentUniversity{}, db.Error
+		}
+		db = GetDB().Debug().Table("departments").Where("id=?", duni.DepartmentID).Take(duni.Department)
+		if db.Error != nil {
+			return &DepartmentUniversity{}, db.Error
+		}
+		db = GetDB().Debug().Table("universities").Where("id=?", duni.UniversityID).Take(duni.University)
+		if db.Error != nil {
+			return &DepartmentUniversity{}, db.Error
+		}
+	}
+	return &duni, nil
+}
+
+func (unif UniverstyFaculty) GetUniByFacultyID(fid uint) ([]UniverstyFaculty, error) {
 	faculties := []UniverstyFaculty{}
-	err := GetDB().Debug().Table("university_facultites").Where("university_id= ?", unid).Find(&faculties).Error
+	err := GetDB().Debug().Table("university_facultites").Where("faculty_id= ?", fid).Find(&faculties).Error
 	if err != nil {
 		return []UniverstyFaculty{}, err
 	}
 	if len(faculties) > 0 {
 		for i, _ := range faculties {
-			err := db.Debug().Table("faculties").Where("id = ?", faculties[i].FacultyID).Take(&faculties[i].Ffaculty).Error
+			err := db.Debug().Table("faculties").Where("id = ?", faculties[i].FacultyID).Take(&faculties[i].Faculty).Error
+			if err != nil {
+				return []UniverstyFaculty{}, err
+			}
+			err = db.Debug().Table("universities").Where("id = ?", faculties[i].UniversityID).Take(&faculties[i].University).Error
 			if err != nil {
 				return []UniverstyFaculty{}, err
 			}
 		}
 	}
 	return faculties, nil
+}
+
+func (uni *University) DeleteByID(unid uint) (int64, error) {
+	db := GetDB().Debug().Table("faculties").Where("id=? ", unid).Take(&uni).Delete(&University{})
+	if db.Error != nil {
+		return 0, nil
+	}
+	return db.RowsAffected, nil
+}
+
+func (unif *UniverstyFaculty) DeleteUniversitiyFacultyByID(unifid uint) (int64, error) {
+	db := GetDB().Debug().Table("university_facultites").Where("id=? ", unifid).Take(&unif).Delete(&UniverstyFaculty{})
+	if db.Error != nil {
+		return 0, nil
+	}
+	return db.RowsAffected, nil
 }

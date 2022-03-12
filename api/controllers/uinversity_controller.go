@@ -50,6 +50,21 @@ func GetByCityID(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, universities)
 }
 
+func GetByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	university := models.University{}
+	universities, err := university.FindBYID(uint(uid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+	}
+	utils.JSON(w, http.StatusOK, universities)
+}
+
 func AddAFaculty(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	unid, err := strconv.ParseUint(vars["id"], 10, 64)
