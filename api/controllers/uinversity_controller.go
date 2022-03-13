@@ -85,3 +85,107 @@ func AddAFaculty(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.JSON(w, http.StatusOK, unif)
 }
+
+func AddADepartment(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	fid, err := strconv.ParseUint(vars["facultyId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	did, err := strconv.ParseUint(vars["departmentId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	universityDepartment := models.UniversityDepartment{}
+	unif, err := universityDepartment.AddADepartmentByID(uint(unid), uint(did), uint(fid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, unif)
+}
+
+func GetByDepartmentID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	did, err := strconv.ParseUint(vars["departmentId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	university := models.UniversityDepartment{}
+	universities, err := university.FindUniByDepartmentID(uint(did))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+	}
+	utils.JSON(w, http.StatusOK, universities)
+}
+
+func GetByFacultyByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	did, err := strconv.ParseUint(vars["facultyId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	university := models.UniverstyFaculty{}
+	universities, err := university.FindUniByFacultyID(uint(did))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+	}
+	utils.JSON(w, http.StatusOK, universities)
+}
+
+func DeleteUniversity(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unid, err := strconv.ParseUint(vars["id"], 10, 65)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	university := models.University{}
+	_, err = university.DeleteByID(uint(unid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	utils.JSON(w, http.StatusNoContent, "")
+}
+
+func DeleteUniDepartmentByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unidid, err := strconv.ParseUint(vars["id"], 10, 65)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	department := models.UniversityDepartment{}
+	_, err = department.DeleteUniversityDepartmentByUniID(uint(unidid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	utils.JSON(w, http.StatusNoContent, "")
+}
+
+func DeleteUniFacultyByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unifid, err := strconv.ParseUint(vars["id"], 10, 65)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	faculty := models.UniverstyFaculty{}
+	_, err = faculty.DeleteUniversityFacultyByID(uint(unifid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	utils.JSON(w, http.StatusNoContent, "")
+}

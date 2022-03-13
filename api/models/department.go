@@ -11,8 +11,8 @@ import (
 type Department struct {
 	gorm.Model
 	Name      string       `json:"name"`
-	Faculties []Faculty    `gorm:"many2many:department_universities;" json:"-"`
-	Schools   []University `gorm:"many2many:department_universities;" json:"-"`
+	Faculties []Faculty    `gorm:"many2many:university_departments;" json:"-"`
+	Schools   []University `gorm:"many2many:university_departments;" json:"-"`
 }
 
 type UniversityDepartment struct {
@@ -77,7 +77,7 @@ func (duni *UniversityDepartment) DeleteByID(dunid uint) (int64, error) {
 
 func (duni *UniversityDepartment) FindDepartmentByUniID(unid uint) ([]UniversityDepartment, error) {
 	uniDepartments := []UniversityDepartment{}
-	db := GetDB().Table("department_universities").Where("university_id", unid).Limit(100).Find(&uniDepartments)
+	db := GetDB().Table("university_departments").Where("university_id", unid).Limit(100).Find(&uniDepartments)
 	if db.Error != nil {
 		return []UniversityDepartment{}, db.Error
 	}
@@ -100,7 +100,7 @@ func (duni *UniversityDepartment) FindDepartmentByUniID(unid uint) ([]University
 
 func (duni *UniversityDepartment) FindDepartmentByFacultyID(fid uint) ([]UniversityDepartment, error) {
 	uniDepartments := []UniversityDepartment{}
-	db := GetDB().Table("department_universities").Where("faculty_id", fid).Limit(100).Find(&uniDepartments)
+	db := GetDB().Table("university_departments").Where("faculty_id", fid).Limit(100).Find(&uniDepartments)
 	if db.Error != nil {
 		return []UniversityDepartment{}, db.Error
 	}
@@ -125,7 +125,7 @@ func (duni *UniversityDepartment) FindDepartmentByFacultyID(fid uint) ([]Univers
 
 func (duni *UniversityDepartment) FindDepartmentByFacultyIDAndUniID(unid, fid uint) ([]UniversityDepartment, error) {
 	uniDepartments := []UniversityDepartment{}
-	db := GetDB().Table("department_universities").Where("faculty_id = ? AND university_id =?", duni.FacultyID, duni.UniversityID).Limit(100).Find(&uniDepartments)
+	db := GetDB().Table("university_departments").Where("faculty_id = ? AND university_id =?", duni.FacultyID, duni.UniversityID).Limit(100).Find(&uniDepartments)
 	if db.Error != nil {
 		return []UniversityDepartment{}, db.Error
 	}

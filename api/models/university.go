@@ -123,7 +123,7 @@ func (duni UniversityDepartment) AddADepartmentByID(unid, did, fid uint) (*Unive
 	return &duni, nil
 }
 
-func (unif UniverstyFaculty) GetUniByFacultyID(fid uint) ([]UniverstyFaculty, error) {
+func (unif UniverstyFaculty) FindUniByFacultyID(fid uint) ([]UniverstyFaculty, error) {
 	faculties := []UniverstyFaculty{}
 	err := GetDB().Debug().Table("university_facultites").Where("faculty_id= ?", fid).Find(&faculties).Error
 	if err != nil {
@@ -144,6 +144,31 @@ func (unif UniverstyFaculty) GetUniByFacultyID(fid uint) ([]UniverstyFaculty, er
 	return faculties, nil
 }
 
+func (unif UniversityDepartment) FindUniByDepartmentID(fid uint) ([]UniversityDepartment, error) {
+	departments := []UniversityDepartment{}
+	err := GetDB().Debug().Table("university_departments").Where("department_id= ?", fid).Find(&departments).Error
+	if err != nil {
+		return []UniversityDepartment{}, err
+	}
+	if len(departments) > 0 {
+		for i, _ := range departments {
+			err := db.Debug().Table("faculties").Where("id = ?", departments[i].FacultyID).Take(&departments[i].Faculty).Error
+			if err != nil {
+				return []UniversityDepartment{}, err
+			}
+			err = db.Debug().Table("universities").Where("id = ?", departments[i].UniversityID).Take(&departments[i].University).Error
+			if err != nil {
+				return []UniversityDepartment{}, err
+			}
+			err = db.Debug().Table("departments").Where("id = ?", departments[i].DepartmentID).Take(&departments[i].Department).Error
+			if err != nil {
+				return []UniversityDepartment{}, err
+			}
+		}
+	}
+	return departments, nil
+}
+
 func (uni *University) DeleteByID(unid uint) (int64, error) {
 	db := GetDB().Debug().Table("faculties").Where("id=? ", unid).Take(&uni).Delete(&University{})
 	if db.Error != nil {
@@ -161,7 +186,7 @@ func (unif *UniverstyFaculty) DeleteUniversityFacultyByID(unid uint) (int64, err
 }
 
 func (duni *UniversityDepartment) DeleteUniversityDepartmentByUniID(unid uint) (int64, error) {
-	db := GetDB().Debug().Table("department_universities").Where("university_id=? ", unid).Take(&duni).Delete(&UniversityDepartment{})
+	db := GetDB().Debug().Table("university_departments").Where("university_id=? ", unid).Take(&duni).Delete(&UniversityDepartment{})
 	if db.Error != nil {
 		return 0, nil
 	}
