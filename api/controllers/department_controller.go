@@ -64,7 +64,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	department := models.Department{}
-	err = models.GetDB().Debug().Table("posts").Where("id = ?", did).Take(&department).Error
+	err = models.GetDB().Debug().Table("departments").Where("id = ?", did).Take(&department).Error
 	if err != nil {
 		utils.ERROR(w, http.StatusNotFound, err)
 		return
