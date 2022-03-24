@@ -109,7 +109,7 @@ func GetUsersByDepartmentID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := models.User{}
-	userGotten, err := user.FindByUniversityID(uint(did))
+	userGotten, err := user.FindByDepartmentID(uint(did))
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
 		return

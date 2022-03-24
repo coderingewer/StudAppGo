@@ -61,7 +61,7 @@ func main() {
 	router.HandleFunc("/api/faculties/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteFacultyByID)).Methods("DELETE")
 
 	//Department routers
-	router.HandleFunc("/api/depertments/new", middlewares.SetMiddlewareJSON(controllers.CreateDepartment)).Methods("POST")
+	router.HandleFunc("/api/departments/new", middlewares.SetMiddlewareJSON(controllers.CreateDepartment)).Methods("POST")
 	router.HandleFunc("/api/depertments/getAll", middlewares.SetMiddlewareJSON(controllers.GetDepartments)).Methods("GET")
 	router.HandleFunc("/api/depertments/getById/{id}", middlewares.SetMiddlewareJSON(controllers.GetDepartment)).Methods("GET")
 	router.HandleFunc("/api/depertments/getByUniIdAndFacultyId/{universityId}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByUniIDAndFacultyID)).Methods("GET")

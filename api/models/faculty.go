@@ -10,14 +10,12 @@ import (
 
 type Faculty struct {
 	gorm.Model
-	Name    string       `json:"name"`
-	Schools []University `gorm:"many2many:faculty_universities;" json:"school"`
+	Name string `json:"name"`
 }
 
 func (f *Faculty) Prepare() {
 	f.ID = 0
 	f.Name = html.EscapeString(strings.TrimSpace(f.Name))
-	f.Schools = []University{}
 }
 
 func (f *Faculty) Save() (*Faculty, error) {

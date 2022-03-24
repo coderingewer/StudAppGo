@@ -12,9 +12,8 @@ type University struct {
 	gorm.Model
 	Name      string    `json:"name"`
 	CityID    uint      `json:"cityId"`
-	UniMail   string    `json:"unimail"`
 	Location  City      `json:"location"`
-	Faculties []Faculty `gorm:"many2many:university_facultites" json:"faculties"`
+	Faculties []Faculty `gorm:"many2many:university_faculties" json:"faculties"`
 }
 
 type UniverstyFaculty struct {
@@ -85,13 +84,13 @@ func (unif UniverstyFaculty) AddAFacultyByID(unid, fid uint) (*UniverstyFaculty,
 		return &UniverstyFaculty{}, err
 	}
 	if unif.UniversityID != 0 {
-		db := GetDB().Debug().Table("faculties").Where("id=?", unif.FacultyID).Take(unif.Faculty)
-		if db.Error != nil {
-			return &UniverstyFaculty{}, db.Error
+		err = GetDB().Debug().Table("faculties").Where("id=?", unif.FacultyID).Take(unif.Faculty).Error
+		if err != nil {
+			return &UniverstyFaculty{}, err
 		}
-		db = GetDB().Debug().Table("universities").Where("id=?", unif.UniversityID).Take(unif.University)
-		if db.Error != nil {
-			return &UniverstyFaculty{}, db.Error
+		err = GetDB().Debug().Table("universities").Where("id=?", unif.UniversityID).Take(unif.University).Error
+		if err != nil {
+			return &UniverstyFaculty{}, err
 		}
 	}
 	return &unif, nil
