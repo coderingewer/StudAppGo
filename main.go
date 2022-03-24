@@ -47,28 +47,24 @@ func main() {
 	router.HandleFunc("/api/universities/new", middlewares.SetMiddlewareJSON(controllers.CreateUniversity)).Methods("POST")
 	router.HandleFunc("/api/universities/getByCityId/{cityId}", middlewares.SetMiddlewareJSON(controllers.GetByCityID)).Methods("GET")
 	router.HandleFunc("/api/universities/addFaculty/{id}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.AddAFaculty)).Methods("POST")
-	router.HandleFunc("/api/universities/addFaculty/{id}/{facultyId}/{departmentId}", middlewares.SetMiddlewareJSON(controllers.AddADepartment)).Methods("POST")
+	router.HandleFunc("/api/universities/addDepartment/{id}/{facultyId}/{departmentId}", middlewares.SetMiddlewareJSON(controllers.AddADepartment)).Methods("POST")
 	router.HandleFunc("/api/universities//getById/{id}", middlewares.SetMiddlewareJSON(controllers.GetByID)).Methods("GET")
-	router.HandleFunc("/api/universities/getByDepartmentId/{departmentId}", middlewares.SetMiddlewareJSON(controllers.GetByDepartmentID)).Methods("GET")
-	router.HandleFunc("/api/universities/getFacultyId/{facultytId}", middlewares.SetMiddlewareJSON(controllers.GetByDepartmentID)).Methods("GET")
-	router.HandleFunc("/api/skills/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniversity)).Methods("DELETE")
-	router.HandleFunc("/api/skills/deleteUniDepartment/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniDepartmentByID)).Methods("DELETE")
-	router.HandleFunc("/api/skills/deleteUniFaculty/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniFacultyByID)).Methods("DELETE")
+	router.HandleFunc("/api/universities/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniversity)).Methods("DELETE")
+	router.HandleFunc("/api/universities/deleteUniDepartment/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniDepartmentByID)).Methods("DELETE")
+	router.HandleFunc("/api/universities/deleteUniFaculty/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteUniFacultyByID)).Methods("DELETE")
 
 	//Faculty routers
 	router.HandleFunc("/api/faculties/new", middlewares.SetMiddlewareJSON(controllers.CreateFaculty)).Methods("POST")
 	router.HandleFunc("/api/faculties/getAll", middlewares.SetMiddlewareJSON(controllers.GetFaculties)).Methods("GET")
-	router.HandleFunc("/api/faculties/{id}", middlewares.SetMiddlewareJSON(controllers.GetFacultyByID)).Methods("GET")
-	router.HandleFunc("/api/faculties/{universityId}", middlewares.SetMiddlewareJSON(controllers.GetFacultyByUniID)).Methods("GET")
+	router.HandleFunc("/api/faculties/grtById/{id}", middlewares.SetMiddlewareJSON(controllers.GetFacultyByID)).Methods("GET")
+	router.HandleFunc("/api/faculties/getByUniId/{universityId}", middlewares.SetMiddlewareJSON(controllers.GetFacultyByUniID)).Methods("GET")
 	router.HandleFunc("/api/faculties/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteFacultyByID)).Methods("DELETE")
 
 	//Department routers
 	router.HandleFunc("/api/depertments/new", middlewares.SetMiddlewareJSON(controllers.CreateDepartment)).Methods("POST")
 	router.HandleFunc("/api/depertments/getAll", middlewares.SetMiddlewareJSON(controllers.GetDepartments)).Methods("GET")
-	router.HandleFunc("/api/depertments/{id}", middlewares.SetMiddlewareJSON(controllers.GetDepartment)).Methods("GET")
-	router.HandleFunc("/api/depertments/{universityId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByUniID)).Methods("GET")
-	router.HandleFunc("/api/depertments/{universityId}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByUniIDAndFacultyID)).Methods("GET")
-	router.HandleFunc("/api/depertments/{facultyId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByFacultyID)).Methods("GET")
+	router.HandleFunc("/api/depertments/getById/{id}", middlewares.SetMiddlewareJSON(controllers.GetDepartment)).Methods("GET")
+	router.HandleFunc("/api/depertments/getByUniIdAndFacultyId/{universityId}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByUniIDAndFacultyID)).Methods("GET")
 	router.HandleFunc("/api/depertments/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteDepartment)).Methods("DELETE")
 
 	port := "8000"

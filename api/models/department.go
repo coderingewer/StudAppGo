@@ -75,54 +75,6 @@ func (duni *UniversityDepartment) DeleteByID(dunid uint) (int64, error) {
 	return db.RowsAffected, nil
 }
 
-func (duni *UniversityDepartment) FindDepartmentByUniID(unid uint) ([]UniversityDepartment, error) {
-	uniDepartments := []UniversityDepartment{}
-	db := GetDB().Table("university_departments").Where("university_id", unid).Limit(100).Find(&uniDepartments)
-	if db.Error != nil {
-		return []UniversityDepartment{}, db.Error
-	}
-	for i, _ := range uniDepartments {
-		err := GetDB().Debug().Table("faculties").Where("id=?", uniDepartments[i].FacultyID).Take(uniDepartments[i].Faculty).Error
-		if err != nil {
-			return []UniversityDepartment{}, err
-		}
-		err = GetDB().Debug().Table("universities").Where("id=?", uniDepartments[i].UniversityID).Take(uniDepartments[i].University).Error
-		if err != nil {
-			return []UniversityDepartment{}, err
-		}
-		err = GetDB().Debug().Table("departments").Where("id=?", uniDepartments[i].DepartmentID).Take(uniDepartments[i].Department).Error
-		if err != nil {
-			return []UniversityDepartment{}, err
-		}
-	}
-	return uniDepartments, nil
-}
-
-func (duni *UniversityDepartment) FindDepartmentByFacultyID(fid uint) ([]UniversityDepartment, error) {
-	uniDepartments := []UniversityDepartment{}
-	db := GetDB().Table("university_departments").Where("faculty_id", fid).Limit(100).Find(&uniDepartments)
-	if db.Error != nil {
-		return []UniversityDepartment{}, db.Error
-	}
-	if len(uniDepartments) > 0 {
-		for i, _ := range uniDepartments {
-			err := GetDB().Debug().Table("faculties").Where("id=?", uniDepartments[i].FacultyID).Take(uniDepartments[i].Faculty).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-			err = GetDB().Debug().Table("universities").Where("id=?", uniDepartments[i].UniversityID).Take(uniDepartments[i].University).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-			err = GetDB().Debug().Table("departments").Where("id=?", uniDepartments[i].DepartmentID).Take(uniDepartments[i].Department).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-		}
-	}
-	return uniDepartments, nil
-}
-
 func (duni *UniversityDepartment) FindDepartmentByFacultyIDAndUniID(unid, fid uint) ([]UniversityDepartment, error) {
 	uniDepartments := []UniversityDepartment{}
 	db := GetDB().Table("university_departments").Where("faculty_id = ? AND university_id =?", duni.FacultyID, duni.UniversityID).Limit(100).Find(&uniDepartments)

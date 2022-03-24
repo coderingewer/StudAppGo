@@ -123,52 +123,6 @@ func (duni UniversityDepartment) AddADepartmentByID(unid, did, fid uint) (*Unive
 	return &duni, nil
 }
 
-func (unif UniverstyFaculty) FindUniByFacultyID(fid uint) ([]UniverstyFaculty, error) {
-	faculties := []UniverstyFaculty{}
-	err := GetDB().Debug().Table("university_facultites").Where("faculty_id= ?", fid).Find(&faculties).Error
-	if err != nil {
-		return []UniverstyFaculty{}, err
-	}
-	if len(faculties) > 0 {
-		for i, _ := range faculties {
-			err := db.Debug().Table("faculties").Where("id = ?", faculties[i].FacultyID).Take(&faculties[i].Faculty).Error
-			if err != nil {
-				return []UniverstyFaculty{}, err
-			}
-			err = db.Debug().Table("universities").Where("id = ?", faculties[i].UniversityID).Take(&faculties[i].University).Error
-			if err != nil {
-				return []UniverstyFaculty{}, err
-			}
-		}
-	}
-	return faculties, nil
-}
-
-func (unif UniversityDepartment) FindUniByDepartmentID(fid uint) ([]UniversityDepartment, error) {
-	departments := []UniversityDepartment{}
-	err := GetDB().Debug().Table("university_departments").Where("department_id= ?", fid).Find(&departments).Error
-	if err != nil {
-		return []UniversityDepartment{}, err
-	}
-	if len(departments) > 0 {
-		for i, _ := range departments {
-			err := db.Debug().Table("faculties").Where("id = ?", departments[i].FacultyID).Take(&departments[i].Faculty).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-			err = db.Debug().Table("universities").Where("id = ?", departments[i].UniversityID).Take(&departments[i].University).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-			err = db.Debug().Table("departments").Where("id = ?", departments[i].DepartmentID).Take(&departments[i].Department).Error
-			if err != nil {
-				return []UniversityDepartment{}, err
-			}
-		}
-	}
-	return departments, nil
-}
-
 func (uni *University) DeleteByID(unid uint) (int64, error) {
 	db := GetDB().Debug().Table("faculties").Where("id=? ", unid).Take(&uni).Delete(&University{})
 	if db.Error != nil {

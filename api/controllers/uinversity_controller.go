@@ -112,36 +112,6 @@ func AddADepartment(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, unif)
 }
 
-func GetByDepartmentID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	did, err := strconv.ParseUint(vars["departmentId"], 10, 64)
-	if err != nil {
-		utils.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	university := models.UniversityDepartment{}
-	universities, err := university.FindUniByDepartmentID(uint(did))
-	if err != nil {
-		utils.ERROR(w, http.StatusInternalServerError, err)
-	}
-	utils.JSON(w, http.StatusOK, universities)
-}
-
-func GetByFacultyByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	did, err := strconv.ParseUint(vars["facultyId"], 10, 64)
-	if err != nil {
-		utils.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	university := models.UniverstyFaculty{}
-	universities, err := university.FindUniByFacultyID(uint(did))
-	if err != nil {
-		utils.ERROR(w, http.StatusInternalServerError, err)
-	}
-	utils.JSON(w, http.StatusOK, universities)
-}
-
 func DeleteUniversity(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	unid, err := strconv.ParseUint(vars["id"], 10, 65)
