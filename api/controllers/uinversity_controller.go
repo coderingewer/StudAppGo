@@ -25,7 +25,7 @@ func CreateUniversity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	university.Prepare()
-	universityCreated, err := university.SAve()
+	universityCreated, err := university.Save()
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -77,8 +77,15 @@ func AddAFaculty(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	universityFaculty := models.UniverstyFaculty{}
-	unif, err := universityFaculty.AddAFacultyByID(uint(unid), uint(fid))
+
+	universityFaculty := models.UniversityFaculty{}
+	universityFaculty.Prepare()
+
+	universityFaculty.FacultyID = uint(fid)
+	universityFaculty.UniversityID = uint(unid)
+
+	unif, err := universityFaculty.AddAFacultyByID()
+
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -104,12 +111,18 @@ func AddADepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	universityDepartment := models.UniversityDepartment{}
-	unif, err := universityDepartment.AddADepartmentByID(uint(unid), uint(did), uint(fid))
+	universityDepartment.Prepare()
+
+	universityDepartment.DepartmentID = uint(did)
+	universityDepartment.FacultyID = uint(fid)
+	universityDepartment.UniversityID = uint(unid)
+
+	duni, err := universityDepartment.AddADepartmentByID()
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	utils.JSON(w, http.StatusOK, unif)
+	utils.JSON(w, http.StatusOK, duni)
 }
 
 func DeleteUniversity(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +164,7 @@ func DeleteUniFacultyByID(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	faculty := models.UniverstyFaculty{}
+	faculty := models.UniversityFaculty{}
 	_, err = faculty.DeleteUniversityFacultyByID(uint(unifid))
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)

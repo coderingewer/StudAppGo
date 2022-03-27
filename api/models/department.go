@@ -15,15 +15,6 @@ type Department struct {
 	Schools   []University `gorm:"many2many:university_departments;" json:"-"`
 }
 
-type UniversityDepartment struct {
-	UniversityID uint       `gorm:"primary_key column:university_id" json:"universityId"`
-	FacultyID    uint       `gorm:"primary_key column:faculty_id" json:"facultyId"`
-	DepartmentID uint       `gorm:"primary_key column:department_id" json:"departmentId"`
-	University   University `json:"university"`
-	Faculty      Faculty    `json:"faculty"`
-	Department   Department `json:"department"`
-}
-
 func (d *Department) Prepare() {
 	d.ID = 0
 	d.Name = html.EscapeString(strings.TrimSpace(d.Name))

@@ -58,7 +58,7 @@ func GetFacultyByUniID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
-	faculty := models.UniverstyFaculty{}
+	faculty := models.UniversityFaculty{}
 	faculties, err := faculty.GetFacultyByUniID(uint(unid))
 	if err != nil {
 		utils.ERROR(w, http.StatusUnprocessableEntity, err)

@@ -19,13 +19,14 @@ type User struct {
 	Email        string     `gorm:"size:255;not null;unique" json:"email"`
 	Firstname    string     `json:"firstname"`
 	Lastname     string     `json:"lastname"`
+	UserRole     string     `gorm:"size:20;not null;" json:"userRole"`
 	Password     string     `gorm:"size:255;not null;" json:"password"`
-	UniversityID uint       `json:"universityId"`
-	University   University `json:"university"`
-	FacultyID    uint       `json:"facultyId"`
-	Faculty      Faculty    `json:"faculty"`
-	DepartmentID uint       `gorm:"not null" json:"departmentId"`
-	Department   Department `json:"department"`
+	UniversityID uint       `json:"-"`
+	University   University `json:"-"`
+	FacultyID    uint       `json:"-"`
+	Faculty      Faculty    `json:"-"`
+	DepartmentID uint       `gorm:"not null" json:"-"`
+	Department   Department `json:"-"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -54,6 +55,7 @@ func (u *User) Prepare() {
 	u.Firstname = html.EscapeString(strings.TrimSpace(u.Lastname))
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
+	u.UserRole = "USER"
 	u.DeletedAt = nil
 }
 
@@ -97,14 +99,14 @@ func (u *User) SaveUser() (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
-	err = GetDB().Debug().Table("universities").Where("id=?", u.UniversityID).Take(&u.University).Error
+	/*err = GetDB().Debug().Table("universities").Where("id=?", u.UniversityID).Take(&u.University).Error
 	if err != nil {
 		return &User{}, err
 	}
 	err = GetDB().Debug().Table("faculties").Where("id=?", u.FacultyID).Take(&u.Faculty).Error
 	if err != nil {
 		return &User{}, err
-	}
+	}*/
 	return u, nil
 }
 

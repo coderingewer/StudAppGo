@@ -46,21 +46,21 @@ func (faculty *Faculty) FindFacultyByID(fid uint) (*Faculty, error) {
 	return faculty, nil
 }
 
-func (unif UniverstyFaculty) GetFacultyByUniID(unid uint) ([]UniverstyFaculty, error) {
-	faculties := []UniverstyFaculty{}
+func (unif UniversityFaculty) GetFacultyByUniID(unid uint) ([]UniversityFaculty, error) {
+	faculties := []UniversityFaculty{}
 	err := GetDB().Debug().Table("university_facultites").Where("university_id= ?", unid).Find(&faculties).Error
 	if err != nil {
-		return []UniverstyFaculty{}, err
+		return []UniversityFaculty{}, err
 	}
 	if len(faculties) > 0 {
 		for i, _ := range faculties {
 			err := db.Debug().Table("faculties").Where("id = ?", faculties[i].FacultyID).Take(&faculties[i].Faculty).Error
 			if err != nil {
-				return []UniverstyFaculty{}, err
+				return []UniversityFaculty{}, err
 			}
 			err = db.Debug().Table("universities").Where("id = ?", faculties[i].UniversityID).Take(&faculties[i].University).Error
 			if err != nil {
-				return []UniverstyFaculty{}, err
+				return []UniversityFaculty{}, err
 			}
 		}
 	}
