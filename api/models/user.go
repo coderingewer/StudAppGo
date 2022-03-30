@@ -27,6 +27,7 @@ type User struct {
 	Faculty      Faculty    `json:"-"`
 	DepartmentID uint       `gorm:"not null" json:"-"`
 	Department   Department `json:"-"`
+	Friends      []User     `gorm:"many2many:user_friends" json:"-"`
 }
 
 func Hash(password string) ([]byte, error) {

@@ -25,7 +25,7 @@ func (p *Post) Prepare() {
 }
 
 func (p *Post) Save() (*Post, error) {
-	err := GetDB().Debug().Create(&p).Error
+	err := db.Debug().Create(&p).Error
 	if err != nil {
 		return &Post{}, err
 	}
