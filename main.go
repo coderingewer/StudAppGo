@@ -71,6 +71,8 @@ func main() {
 	router.HandleFunc("/api/friendship/sendRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.SendRequest)).Methods("POST")
 	router.HandleFunc("/api/friendship/acceptRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.AcceptFrienshipRequest)).Methods("POST")
 
+	router.HandleFunc("/api/media/file", middlewares.SetMiddlewareJSON(controllers.ImgUpload)).Methods("POST")
+
 	port := "8000"
 
 	if port == "" {
