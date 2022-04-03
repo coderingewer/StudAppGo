@@ -70,3 +70,21 @@ func UpdateImage(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, imgUpdated)
 
 }
+
+func DeleteImageByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	imgid, err := strconv.ParseUint(vars["imageId"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	img := models.Image{}
+	_, err = img.DeleteByID(uint(imgid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	utils.JSON(w, http.StatusNoContent, "")
+
+}

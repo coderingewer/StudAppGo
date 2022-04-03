@@ -44,7 +44,6 @@ func (*media) FileUpload(file File) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//img.Url = uploadUrl	err = db.Debug().Create(img).Error
 	if err != nil {
 		return " ", err
 	}
