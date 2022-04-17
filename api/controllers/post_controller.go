@@ -145,7 +145,20 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnauthorized, errors.New("Yetkisi yok"))
 		return
 	}
+	img := models.PostImage{}
+
+	_, err = img.Image.DeletePostImgByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
 	_, err = post.DeleteByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	_, err = img.Image.DeletePostImgByID(uint(pid))
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
 		return

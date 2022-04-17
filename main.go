@@ -71,9 +71,10 @@ func main() {
 	router.HandleFunc("/api/friendship/sendRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.SendRequest)).Methods("POST")
 	router.HandleFunc("/api/friendship/acceptRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.AcceptFrienshipRequest)).Methods("POST")
 
+	//Image controller
 	router.HandleFunc("/api/images/upload", middlewares.SetMiddlewareJSON(controllers.ImgUpload)).Methods("POST")
 	router.HandleFunc("/api/images/update/{imageId}", middlewares.SetMiddlewareJSON(controllers.UpdateImage)).Methods("POST")
-	router.HandleFunc("/api/images/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteImageByID)).Methods("DELETE")
+	router.HandleFunc("/api/images/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteImageByUserID)).Methods("DELETE")
 
 	port := "8000"
 

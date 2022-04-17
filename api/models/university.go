@@ -26,9 +26,9 @@ type UniversityFaculty struct {
 
 type UniversityDepartment struct {
 	gorm.Model
-	UniversityID uint       `gorm:"primary_key column:university_id" json:"universityId"`
-	FacultyID    uint       `gorm:"primary_key column:faculty_id" json:"facultyId"`
-	DepartmentID uint       `gorm:"primary_key column:department_id" json:"departmentId"`
+	UniversityID uint       `gorm:"primary_key column:university_id not null" json:"universityId"`
+	FacultyID    uint       `gorm:"primary_key column:faculty_id not null" json:"facultyId"`
+	DepartmentID uint       `gorm:"primary_key column:department_id not null" json:"departmentId"`
 	University   University `json:"university"`
 	Faculty      Faculty    `json:"faculty"`
 	Department   Department `json:"department"`
