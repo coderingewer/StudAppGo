@@ -51,7 +51,7 @@ func (fr *FriendshipRequest) DeleteFrienshipRequestByUserID(frsid uint) (int64, 
 	return db.RowsAffected, nil
 }
 
-func (fr FriendshipRequest) GetRequestsByRecieverID(rid uint) (*[]FriendshipRequest, error) {
+func (fr FriendshipRequest) FindRequestsByRecieverID(rid uint) (*[]FriendshipRequest, error) {
 	requests := []FriendshipRequest{}
 	err := db.Debug().Model(&FriendshipRequest{}).Where("reciever_id", rid).Find(&requests).Error
 	if err != nil {
@@ -68,7 +68,7 @@ func (fr FriendshipRequest) GetRequestsByRecieverID(rid uint) (*[]FriendshipRequ
 	return &requests, nil
 }
 
-func (fr FriendshipRequest) GetRequestsBySenderID(rid uint) (*[]FriendshipRequest, error) {
+func (fr FriendshipRequest) FindRequestsBySenderID(rid uint) (*[]FriendshipRequest, error) {
 	requests := []FriendshipRequest{}
 	err := db.Debug().Model(&FriendshipRequest{}).Where("sender_id", rid).Find(&requests).Error
 	if err != nil {
@@ -101,7 +101,7 @@ func (uf *UserFriend) CreateFriend() (*UserFriend, error) {
 
 func (uf *UserFriend) FindFriendsByUserID(uid uint) (*[]UserFriend, error) {
 	friends := []UserFriend{}
-	err := db.Debug().Table("user_firends").Where("reciever_id", uid).Or(UserFriend{SenderID: uid}).Find(friends).Error
+	err := db.Debug().Table("user_firends").Where("reciever_id=?", uid).Or(UserFriend{SenderID: uid}).Find(friends).Error
 	if err != nil {
 		return &[]UserFriend{}, nil
 	}

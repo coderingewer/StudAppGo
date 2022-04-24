@@ -40,7 +40,7 @@ func SendRequest(w http.ResponseWriter, r *http.Request) {
 
 func AcceptFrienshipRequest(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	frid, err := strconv.ParseUint(vars["requestID"], 10, 64)
+	frid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -51,7 +51,7 @@ func AcceptFrienshipRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fr := models.FriendshipRequest{}
-	_, err = fr.GetRequestsByRecieverID(uid)
+	err = models.GetDB().Debug().Table("friendship_requests").Where("reciever_id = ?", uid).Error
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -61,7 +61,6 @@ func AcceptFrienshipRequest(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
 		return
 	}
-
 	userf := models.UserFriend{}
 	userf.Prepare()
 	userf.SenderID = fr.SenderID
@@ -79,6 +78,38 @@ func AcceptFrienshipRequest(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, FriendCreated)
 }
 
+func GetRequestsByRecieverID(w http.ResponseWriter, r *http.Request) {
+	reciever := models.FriendshipRequest{}
+	uid, err := auth.ExtractTokenID(r)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	friendRequests, err := reciever.FindRequestsByRecieverID(uint(uid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, errors.New(http.StatusText(http.StatusInternalServerError)))
+		return
+	}
+	utils.JSON(w, http.StatusOK, friendRequests)
+
+}
+
+func GetRequestsBySenderID(w http.ResponseWriter, r *http.Request) {
+	reciever := models.FriendshipRequest{}
+	uid, err := auth.ExtractTokenID(r)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	friendRequests, err := reciever.FindRequestsBySenderID(uint(uid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, errors.New(http.StatusText(http.StatusInternalServerError)))
+		return
+	}
+	utils.JSON(w, http.StatusOK, friendRequests)
+
+}
+
 func GetFriendsByUserID(w http.ResponseWriter, r *http.Request) {
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -91,10 +122,7 @@ func GetFriendsByUserID(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusInternalServerError, errors.New(http.StatusText(http.StatusInternalServerError)))
 		return
 	}
-	if uid != userf.SenderID || uid != userf.RecieverID {
-		utils.ERROR(w, http.StatusUnauthorized, errors.New("Yetkisi yok"))
-		return
-	}
+
 	utils.JSON(w, http.StatusOK, friends)
 }
 
@@ -105,7 +133,7 @@ func DeleteRequestBySenderID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fr := models.FriendshipRequest{}
-	err = models.GetDB().Debug().Table("friendship_requests").Where("sender_id").Take(fr).Error
+	err = models.GetDB().Debug().Table("friendship_requests").Where("sender_id = ?", uid).Take(fr).Error
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -139,7 +167,7 @@ func DeleteRequestByRecieverID(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnauthorized, errors.New("Yetkisi yok"))
 		return
 	}
-	_, err = fr.DeleteFrienshipRequestByUserID(uid)
+	_, err = fr.DeleteFrienshipRequestByUserID(uint(uid))
 	if err != nil {
 		utils.ERROR(w, http.StatusInternalServerError, errors.New(http.StatusText(http.StatusInternalServerError)))
 		return

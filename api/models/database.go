@@ -29,7 +29,12 @@ func init() {
 	}
 
 	db = conn
-	db.Debug().AutoMigrate(User{}, Post{}, Skill{}, City{}, University{}, Faculty{}, Department{}, UniversityDepartment{}, UniversityFaculty{})
+	db.Debug().AutoMigrate(User{}, Post{}, Skill{},
+		City{}, University{}, Faculty{},
+		Department{}, UniversityDepartment{},
+		UniversityFaculty{}, Comment{}, Amigo{},
+		Image{}, UserFriend{}, FriendshipRequest{})
+
 	fmt.Println("DB Successfully connected!")
 }
 
