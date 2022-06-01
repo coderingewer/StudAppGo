@@ -175,3 +175,5 @@ func DeleteRequestByRecieverID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Entity", fmt.Sprintf("%d", uid))
 	utils.JSON(w, http.StatusNoContent, "")
 }
+
+//merhaba
