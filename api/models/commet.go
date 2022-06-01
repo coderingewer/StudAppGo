@@ -9,7 +9,7 @@ import (
 
 type Comment struct {
 	gorm.Model
-	UserID uint   `gorm:"not null" json:"userId"`
+	UserID uint   `gorm:"not null primary  key;" json:"userId"`
 	PostID uint   `gorm:"not null" json:"postId"`
 	Text   string `gorm:"not null;" json:"text"`
 	User   User   `json:"user"`

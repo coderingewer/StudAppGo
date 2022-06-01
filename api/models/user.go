@@ -84,7 +84,7 @@ func (u *User) Validate(action string) error {
 		if u.Username == "" {
 			return errors.New("E Posta Adresi Zorulu")
 		}
-		if edu := strings.HasSuffix(u.Email, ".edu"); !edu {
+		if edu := strings.HasSuffix(u.Email, ".edu.tr"); !edu {
 			return errors.New("Email üniversite Maili Olmalıdır")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
