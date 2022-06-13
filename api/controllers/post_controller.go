@@ -39,6 +39,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
+
 	w.Header().Set("Location", fmt.Sprintf("%s%s%d", r.Host, r.URL, post.ID))
 	utils.JSON(w, http.StatusCreated, postCreated)
 }
@@ -61,6 +62,10 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	}
 	post := models.Post{}
 	postReceived, err := post.FindByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	utils.JSON(w, http.StatusOK, postReceived)
 }
 
@@ -141,7 +146,20 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnauthorized, errors.New("Yetkisi yok"))
 		return
 	}
+	img := models.PostImage{}
+
+	_, err = img.Image.DeletePostImgByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
 	_, err = post.DeleteByID(uint(pid))
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	_, err = img.Image.DeletePostImgByID(uint(pid))
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
 		return

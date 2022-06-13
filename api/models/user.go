@@ -15,15 +15,26 @@ import (
 
 type User struct {
 	gorm.Model
-	Username     string     `gorm:"size:255;not null; unique" json:"username"`
-	Email        string     `gorm:"size:255;not null;unique" json:"email"`
-	Firstname    string     `json:"firstname"`
-	Lastname     string     `json:"lastname"`
-	Password     string     `gorm:"size:255;not null;" json:"password"`
-	UniversityID uint       `json:"universityId"`
-	University   University `json:"university"`
-	FacultyID    uint       `json:"facultyId"`
-	Faculty      Faculty    `json:"faculty"`
+	Username     string       `gorm:"size:255;not null; unique" json:"username"`
+	Email        string       `gorm:"size:255;not null;unique" json:"email"`
+	Flowers      []UserFlower `gorm:"foreignkey:UserID" json:"flowers"`
+	FlowingUsers []UserFlower `gorm:"foreignkey:FlowerID" json:"flowing_users"`
+	Firstname    string       `json:"firstname"`
+	Lastname     string       `json:"lastname"`
+	UserRole     string       `gorm:"size:20;not null;" json:"userRole"`
+	Password     string       `gorm:"size:255;not null;" json:"password"`
+	UniversityID uint         `json:"-"`
+	University   University   `json:"-"`
+	FacultyID    uint         `json:"-"`
+	Faculty      Faculty      `json:"-"`
+	DepartmentID uint         `gorm:"not null" json:"-"`
+	Department   Department   `json:"-"`
+}
+
+type UserFlower struct {
+	gorm.Model
+	UserID   uint `gorm:"not null" json:"user_id"`
+	FlowerID uint `gorm:"not null" json:"flower_id"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -52,6 +63,7 @@ func (u *User) Prepare() {
 	u.Firstname = html.EscapeString(strings.TrimSpace(u.Lastname))
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
+	u.UserRole = "USER"
 	u.DeletedAt = nil
 }
 
@@ -79,7 +91,7 @@ func (u *User) Validate(action string) error {
 		if u.Username == "" {
 			return errors.New("E Posta Adresi Zorulu")
 		}
-		if edu := strings.HasSuffix(u.Email, ".edu"); !edu {
+		if edu := strings.HasSuffix(u.Email, ".edu.tr"); !edu {
 			return errors.New("Email üniversite Maili Olmalıdır")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
@@ -95,14 +107,14 @@ func (u *User) SaveUser() (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
-	err = GetDB().Debug().Table("universities").Where("id=?", u.UniversityID).Take(&u.University).Error
+	/*err = GetDB().Debug().Table("universities").Where("id=?", u.UniversityID).Take(&u.University).Error
 	if err != nil {
 		return &User{}, err
 	}
 	err = GetDB().Debug().Table("faculties").Where("id=?", u.FacultyID).Take(&u.Faculty).Error
 	if err != nil {
 		return &User{}, err
-	}
+	}*/
 	return u, nil
 }
 
@@ -125,6 +137,10 @@ func (u *User) FindAllUsers() ([]User, error) {
 				return []User{}, err
 			}
 			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
 			if err != nil {
 				return []User{}, err
 			}
@@ -153,6 +169,68 @@ func (u *User) FindByUniversityID(unid uint) ([]User, error) {
 			if err != nil {
 				return []User{}, err
 			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
+		}
+	}
+	return users, nil
+}
+
+func (u *User) FindByFacultyID(unid uint) ([]User, error) {
+	users := []User{}
+	err := GetDB().Table("users").Where("faculty_id=?").Limit(100).Find(&users).Error
+	if err != nil {
+		return []User{}, err
+	}
+	if len(users) > 0 {
+		for i, _ := range users {
+			err := GetDB().Debug().Table("universities").Where("id=?", users[i].UniversityID).Take(&users[i].University).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("faculties").Where("id=?", users[i].FacultyID).Take(&users[i].Faculty).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
+		}
+	}
+	return users, nil
+}
+
+func (u *User) FindByDepartmentID(unid uint) ([]User, error) {
+	users := []User{}
+	err := GetDB().Table("users").Where("department_id=?").Limit(100).Find(&users).Error
+	if err != nil {
+		return []User{}, err
+	}
+	if len(users) > 0 {
+		for i, _ := range users {
+			err := GetDB().Debug().Table("universities").Where("id=?", users[i].UniversityID).Take(&users[i].University).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("faculties").Where("id=?", users[i].FacultyID).Take(&users[i].Faculty).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("cities").Where("id=?", users[i].University.CityID).Take(&users[i].University.Location).Error
+			if err != nil {
+				return []User{}, err
+			}
+			err = GetDB().Debug().Table("departments").Where("id=?", users[i].DepartmentID).Take(&users[i].Department).Error
+			if err != nil {
+				return []User{}, err
+			}
 		}
 	}
 	return users, nil
@@ -172,15 +250,11 @@ func (u *User) FindByID(uid uint) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
-	err = GetDB().Table("faculties").Where("id =? ", u.FacultyID).Take(&u.Faculty).Error
-	if err != nil {
-		return &User{}, err
-	}
-	err = GetDB().Debug().Table("universities").Where("id=?", u.University).Take(&u.University).Error
-	if err != nil {
-		return &User{}, err
-	}
 	err = GetDB().Debug().Table("faculties").Where("id=?", u.FacultyID).Take(&u.Faculty).Error
+	if err != nil {
+		return &User{}, err
+	}
+	err = GetDB().Debug().Table("departments").Where("id=?", u.DepartmentID).Take(&u.Department).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -194,7 +268,6 @@ func (u *User) UpdateAUser(uid uint) (*User, error) {
 	}
 	db := GetDB().Table("users").Where("id=?", uid).UpdateColumn(
 		map[string]interface{}{
-			"password":   u.Password,
 			"username":   u.Username,
 			"email":      u.Email,
 			"updated_at": time.Now(),
@@ -217,4 +290,34 @@ func (u *User) DeleteByID(uid uint) (int64, error) {
 	}
 	return db.RowsAffected, nil
 
+}
+
+func (userf *UserFlower) FlowUser(uid, senderid uint) error {
+	userf.UserID = uid
+	userf.FlowerID = senderid
+	userf.CreatedAt = time.Now()
+	userf.UpdatedAt = time.Now()
+	err := GetDB().Debug().Table("user_flowers").Create(&userf).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (userf *UserFlower) FindByUserID(uid uint) ([]UserFlower, error) {
+	userfs := []UserFlower{}
+	err := GetDB().Table("user_flowers").Where("user_id=?", uid).Find(&userfs).Error
+	if err != nil {
+		return []UserFlower{}, err
+	}
+	return userfs, nil
+}
+
+func (userf *UserFlower) FindByFlowerID(uid uint) ([]UserFlower, error) {
+	userfs := []UserFlower{}
+	err := GetDB().Table("user_flowers").Where("flower_id=?", uid).Find(&userfs).Error
+	if err != nil {
+		return []UserFlower{}, err
+	}
+	return userfs, nil
 }

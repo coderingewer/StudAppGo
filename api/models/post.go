@@ -25,7 +25,7 @@ func (p *Post) Prepare() {
 }
 
 func (p *Post) Save() (*Post, error) {
-	err := GetDB().Debug().Create(&p).Error
+	err := db.Debug().Create(&p).Error
 	if err != nil {
 		return &Post{}, err
 	}
@@ -41,7 +41,7 @@ func (p *Post) Save() (*Post, error) {
 
 func (p *Post) FindAllPosts() ([]Post, error) {
 	posts := []Post{}
-	err := GetDB().Debug().Table("posts").Limit(100).Find(&posts).Error
+	err := GetDB().Debug().Table("posts").Find(&posts).Error
 	if err != nil {
 		return []Post{}, err
 	}

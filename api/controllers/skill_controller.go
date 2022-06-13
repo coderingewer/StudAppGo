@@ -26,6 +26,7 @@ func CreateSkill(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	skill.Prepare()
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
