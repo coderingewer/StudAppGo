@@ -188,3 +188,47 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusNoContent, "")
 
 }
+
+func FlowUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	senderid, err := auth.ExtractTokenID(r)
+	if err != nil {
+		utils.ERROR(w, http.StatusUnauthorized, errors.New("Yetkilendirilmemiş"))
+	}
+	if senderid != uint(uid) {
+		utils.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
+	}
+	userf := models.UserFlower{}
+
+	userf.FlowUser(uint(uid), uint(senderid))
+	utils.JSON(w, http.StatusOK, "")
+}
+
+func GetUserFlower(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	userf := models.UserFlower{}
+	userf.FindByUserID(uint(uid))
+	utils.JSON(w, http.StatusOK, userf)
+}
+
+func GetUserFlowing(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	userf := models.UserFlower{}
+	userf.FindByFlowerID(uint(uid))
+	utils.JSON(w, http.StatusOK, userf)
+}

@@ -15,19 +15,26 @@ import (
 
 type User struct {
 	gorm.Model
-	Username     string     `gorm:"size:255;not null; unique" json:"username"`
-	Email        string     `gorm:"size:255;not null;unique" json:"email"`
-	Firstname    string     `json:"firstname"`
-	Lastname     string     `json:"lastname"`
-	UserRole     string     `gorm:"size:20;not null;" json:"userRole"`
-	Password     string     `gorm:"size:255;not null;" json:"password"`
-	UniversityID uint       `json:"-"`
-	University   University `json:"-"`
-	FacultyID    uint       `json:"-"`
-	Faculty      Faculty    `json:"-"`
-	DepartmentID uint       `gorm:"not null" json:"-"`
-	Department   Department `json:"-"`
-	Friends      []User     `gorm:"many2many:user_friends" json:"-"`
+	Username     string       `gorm:"size:255;not null; unique" json:"username"`
+	Email        string       `gorm:"size:255;not null;unique" json:"email"`
+	Flowers      []UserFlower `gorm:"foreignkey:UserID" json:"flowers"`
+	FlowingUsers []UserFlower `gorm:"foreignkey:FlowerID" json:"flowing_users"`
+	Firstname    string       `json:"firstname"`
+	Lastname     string       `json:"lastname"`
+	UserRole     string       `gorm:"size:20;not null;" json:"userRole"`
+	Password     string       `gorm:"size:255;not null;" json:"password"`
+	UniversityID uint         `json:"-"`
+	University   University   `json:"-"`
+	FacultyID    uint         `json:"-"`
+	Faculty      Faculty      `json:"-"`
+	DepartmentID uint         `gorm:"not null" json:"-"`
+	Department   Department   `json:"-"`
+}
+
+type UserFlower struct {
+	gorm.Model
+	UserID   uint `gorm:"not null" json:"user_id"`
+	FlowerID uint `gorm:"not null" json:"flower_id"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -283,4 +290,34 @@ func (u *User) DeleteByID(uid uint) (int64, error) {
 	}
 	return db.RowsAffected, nil
 
+}
+
+func (userf *UserFlower) FlowUser(uid, senderid uint) error {
+	userf.UserID = uid
+	userf.FlowerID = senderid
+	userf.CreatedAt = time.Now()
+	userf.UpdatedAt = time.Now()
+	err := GetDB().Debug().Table("user_flowers").Create(&userf).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (userf *UserFlower) FindByUserID(uid uint) ([]UserFlower, error) {
+	userfs := []UserFlower{}
+	err := GetDB().Table("user_flowers").Where("user_id=?", uid).Find(&userfs).Error
+	if err != nil {
+		return []UserFlower{}, err
+	}
+	return userfs, nil
+}
+
+func (userf *UserFlower) FindByFlowerID(uid uint) ([]UserFlower, error) {
+	userfs := []UserFlower{}
+	err := GetDB().Table("user_flowers").Where("flower_id=?", uid).Find(&userfs).Error
+	if err != nil {
+		return []UserFlower{}, err
+	}
+	return userfs, nil
 }

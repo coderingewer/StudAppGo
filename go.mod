@@ -62,6 +62,7 @@ require (
 	github.com/sendgrid/sendgrid-go v3.11.1+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
+	github.com/treblle/treblle-go v0.0.0-20220324092734-243887625c57 // indirect
 	github.com/urfave/cli/v2 v2.4.0 // indirect
 	github.com/vanng822/css v0.0.0-20190504095207-a21e860bcd04 // indirect
 	github.com/vanng822/go-premailer v0.0.0-20191214114701-be27abe028fe // indirect

@@ -33,7 +33,7 @@ func init() {
 		City{}, University{}, Faculty{},
 		Department{}, UniversityDepartment{},
 		UniversityFaculty{}, Comment{}, Amigo{},
-		Image{}, UserFriend{}, FriendshipRequest{})
+		Image{}, Tag{})
 
 	fmt.Println("DB Successfully connected!")
 }

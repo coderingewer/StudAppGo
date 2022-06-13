@@ -39,6 +39,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		utils.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
+
 	w.Header().Set("Location", fmt.Sprintf("%s%s%d", r.Host, r.URL, post.ID))
 	utils.JSON(w, http.StatusCreated, postCreated)
 }

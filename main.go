@@ -61,14 +61,6 @@ func main() {
 	router.HandleFunc("/api/depertments/getByUniIdAndFacultyId/{universityId}/{facultyId}", middlewares.SetMiddlewareJSON(controllers.GetDepartmentByUniIDAndFacultyID)).Methods("GET")
 	router.HandleFunc("/api/depertments/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteDepartment)).Methods("DELETE")
 
-	router.HandleFunc("/api/friendship/sendRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.SendRequest)).Methods("POST")
-	router.HandleFunc("/api/friendship/acceptRequest/{userId}", middlewares.SetMiddlewareJSON(controllers.AcceptFrienshipRequest)).Methods("POST")
-	router.HandleFunc("/api/friendship/getRequestsBySenderId", middlewares.SetMiddlewareJSON(controllers.GetRequestsBySenderID)).Methods("GET")
-	router.HandleFunc("/api/friendship/getRequestsByRecieverId", middlewares.SetMiddlewareJSON(controllers.GetRequestsByRecieverID)).Methods("GET")
-	router.HandleFunc("/api/friendship/getFriendsByUserId", middlewares.SetMiddlewareJSON(controllers.GetFriendsByUserID)).Methods("GET")
-	router.HandleFunc("/api/friendship/deleteByRecieverId/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteRequestByRecieverID)).Methods("DELETE")
-	router.HandleFunc("/api/friendship/deleteBySenderId/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteRequestBySenderID)).Methods("DELETE")
-
 	router.HandleFunc("/api/images/upload", middlewares.SetMiddlewareJSON(controllers.ImgUpload)).Methods("POST")
 	router.HandleFunc("/api/images/update/{imageId}", middlewares.SetMiddlewareJSON(controllers.UpdateImage)).Methods("POST")
 	router.HandleFunc("/api/images/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteImageByUserID)).Methods("DELETE")
