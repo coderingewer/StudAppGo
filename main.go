@@ -74,7 +74,7 @@ func main() {
 	port := "8000"
 
 	if port != "8000" {
-		port = "studappdemo.herokuapp.com/"
+		port = "studappdemo.herokuapp.com"
 	}
 	fmt.Println(port)
 
