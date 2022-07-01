@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	host     = "localhost"
+	host     = "ec2-52-49-120-150.eu-west-1.compute.amazonaws.com"
 	port     = 5432
-	user     = "postgres"
-	password = "uyumak"
-	dbname   = "studapp"
+	user     = "yegnwdbtcidghq"
+	password = "fb4de03fd8a6faffaa8a57684ee80cc903f96ba9cd9ee55d415ce735f0cd2ca5"
+	dbname   = "d1j5rp6djesaba"
 )
 
 var db *gorm.DB
