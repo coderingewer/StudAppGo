@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
 	"studapp/api/controllers"
 	"studapp/middlewares"
 
@@ -68,4 +70,17 @@ func main() {
 	router.HandleFunc("/api/amigos/getByUserId", middlewares.SetMiddlewareJSON(controllers.GetAmigosByUserID)).Methods("GET")
 	router.HandleFunc("/api/amigos/getByCityId/{cityId}", middlewares.SetMiddlewareJSON(controllers.GetAmigosByCityID)).Methods("GET")
 	router.HandleFunc("/api/amigos/delete/{id}", middlewares.SetMiddlewareAuthentication(controllers.DeleteAmigo)).Methods("DELETE")
+
+	port := "studappdemo.herokuapp.com"
+
+	if port != "" {
+		port = "studappdemo.herokuapp.com/"
+	}
+	fmt.Println(port)
+
+	err := http.ListenAndServe(":"+port, router)
+	if err != nil {
+		fmt.Print(err)
+	}
+
 }
